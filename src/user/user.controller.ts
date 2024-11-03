@@ -23,6 +23,16 @@ async createUser(@Body() userData: User) {
     const { accountNumber, amount } = body;
     return await this.userService.fundAccount(accountNumber, amount);
 }
+
+@Post('transfer')
+  async transferFunds(
+    @Body('senderAccountNumber') senderAccountNumber: number,
+    @Body('recipientAccountNumber') recipientAccountNumber: number,
+    @Body('transferAmount') transferAmount: number
+  ): Promise<{ message: string; sender: User; recipient: User }> {
+    return this.userService.transferFunds(senderAccountNumber, recipientAccountNumber, transferAmount);
+  }
+
 }
 
 
