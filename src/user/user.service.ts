@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { KnexService } from '../knex/knex.service';
 import { User } from '../model/user.model';
 import * as bcrypt from 'bcrypt';
@@ -7,8 +7,19 @@ import * as bcrypt from 'bcrypt';
 export class UserService {
   constructor(private readonly knexService: KnexService) {}
 
-  async createUser(userData: User): Promise<User & { id: number }> {
+  async createUser(userData: Omit<User, 'id'>): Promise<User> {
     const knex = this.knexService.getKnex();
+
+    const existingUser = await knex('users')
+      .where({ email: userData.email })
+      .orWhere({ accountNumber: userData.accountNumber })
+      .first();
+
+    if (existingUser) {
+      throw new ConflictException(
+        'A user with the provided email or account number already exists',
+      );
+    }
 
     const hashedPassword = await bcrypt.hash(userData.password, 10);
 
@@ -31,7 +42,7 @@ export class UserService {
     const user = await knex('users').where({ accountNumber }).first();
 
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     const currentAmount = Number(user.amount) || 0;

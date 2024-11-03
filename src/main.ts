@@ -3,9 +3,10 @@ import { AppModule } from './app.module';
 import { KnexService } from './knex/knex.service';
 
 async function bootstrap() {
+  
   const app = await NestFactory.create(AppModule);
   const knexService = app.get(KnexService);
-
+  app.enableCors();
   await knexService.testConnection(); 
  
   
