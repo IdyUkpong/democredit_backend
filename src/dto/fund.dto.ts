@@ -7,5 +7,5 @@ export class FundAccountDto {
 
     @IsInt()
     @IsNotEmpty()
-    amount: number; // Amount to add to the existing account balance
+    amount: number; 
 }
