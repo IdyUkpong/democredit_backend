@@ -43,7 +43,16 @@ $ yarn run start:dev
 
 # production mode
 $ yarn run start:prod
+
+npx knex migrate:make create_users_table
+$ npx knex migrate:latest 
+
+npx knex migrate:rollback
+
 ```
+
+
+
 
 ## Test
 

@@ -5,6 +5,7 @@ export class User {
     email: string;
     password: string;
     accountNumber:number;
-    amount?:number
+    amount?:number;
+    bvn:string
   }
   

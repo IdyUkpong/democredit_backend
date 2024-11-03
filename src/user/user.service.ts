@@ -27,6 +27,7 @@ export class UserService {
       ...userData,
       password: hashedPassword,
       amount: userData.amount ?? 0,
+      bvn:userData.bvn
     };
 
     const [userId] = await knex('users').insert(newUserData);
