@@ -3,6 +3,7 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { KnexService } from '../knex/knex.service';
 import { User } from '../model/user.model';
@@ -39,6 +40,28 @@ export class UserService {
     return { ...newUserData, id: userId };
   }
 
+  async login(
+    email: string,
+    password: string,
+  ): Promise<{ message: string; user: User }> {
+    const knex = this.knexService.getKnex();
+
+    const user = await knex('users').where({ email }).first();
+    if (!user) {
+      throw new UnauthorizedException('Invalid email or password');
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Invalid email or password');
+    }
+
+    return {
+      message: 'Login successful',
+      user,
+    };
+  }
+
   async fundAccount(
     accountNumber: number,
     amount: number,
@@ -67,24 +90,24 @@ export class UserService {
   }
 
   async transferFunds(
-    senderAccountNumber: number,
-    recipientAccountNumber: number,
+    originatorAccountNumber: number,
+    beneficiaryAccountNumber: number,
     transferAmount: number,
-  ): Promise<{ message: string; sender: User; recipient: User }> {
+  ): Promise<{ message: string; originator: User; beneficiary: User }> {
     const knex = this.knexService.getKnex();
 
-    const sender = await knex('users')
-      .where({ accountNumber: senderAccountNumber })
+    const originator = await knex('users')
+      .where({ accountNumber: originatorAccountNumber })
       .first();
-    const recipient = await knex('users')
-      .where({ accountNumber: recipientAccountNumber })
+    const beneficiary = await knex('users')
+      .where({ accountNumber: beneficiaryAccountNumber })
       .first();
 
-    if (!sender) {
-      throw new NotFoundException('Sender account not found');
+    if (!originator) {
+      throw new NotFoundException('Originator account not found');
     }
 
-    if (!recipient) {
+    if (!beneficiary) {
       throw new NotFoundException('Recipient account not found');
     }
 
@@ -95,39 +118,80 @@ export class UserService {
       );
     }
 
-    const senderCurrentAmount = Number(sender.amount) || 0;
-    if (senderCurrentAmount < amountToTransfer) {
+    const originatorCurrentAmount = Number(originator.amount) || 0;
+    if (originatorCurrentAmount < amountToTransfer) {
       throw new BadRequestException('Insufficient funds');
     }
 
-    const senderNewAmount = parseFloat(
-      (senderCurrentAmount - amountToTransfer).toFixed(2),
+    const originatorNewAmount = parseFloat(
+      (originatorCurrentAmount - amountToTransfer).toFixed(2),
     );
-    const recipientNewAmount = parseFloat(
-      (Number(recipient.amount) + amountToTransfer).toFixed(2),
+    const beneficiaryNewAmount = parseFloat(
+      (Number(beneficiary.amount) + amountToTransfer).toFixed(2),
     );
 
-    await knex.transaction(async (trx) => {
-      await trx('users')
-        .where({ accountNumber: senderAccountNumber })
-        .update({ amount: senderNewAmount });
+    await knex.transaction(async (transaction) => {
+      await transaction('users')
+        .where({ accountNumber: originatorAccountNumber })
+        .update({ amount: originatorNewAmount });
 
-      await trx('users')
-        .where({ accountNumber: recipientAccountNumber })
-        .update({ amount: recipientNewAmount });
+      await transaction('users')
+        .where({ accountNumber: beneficiaryAccountNumber })
+        .update({ amount: beneficiaryNewAmount });
     });
 
-    const updatedSender = await knex('users')
-      .where({ accountNumber: senderAccountNumber })
+    const updatedoriginator = await knex('users')
+      .where({ accountNumber: originatorAccountNumber })
       .first();
-    const updatedRecipient = await knex('users')
-      .where({ accountNumber: recipientAccountNumber })
+    const updatedBeneficiary = await knex('users')
+      .where({ accountNumber: beneficiaryAccountNumber })
       .first();
 
     return {
       message: 'Transfer completed successfully',
-      sender: updatedSender,
-      recipient: updatedRecipient,
+      originator: updatedoriginator,
+      beneficiary: updatedBeneficiary,
+    };
+  }
+
+  async withdrawFunds(
+    accountNumber: number,
+    amount: number,
+    pin: number,
+  ): Promise<{ message: string; user: User }> {
+    const knex = this.knexService.getKnex();
+
+    if (!/^\d{4}$/.test(String(pin))) {
+      throw new BadRequestException('PIN must be a 4-digit number');
+    }
+
+    const user = await knex('users').where({ accountNumber }).first();
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const withdrawalAmount = Number(amount);
+    if (isNaN(withdrawalAmount) || withdrawalAmount <= 0) {
+      throw new BadRequestException(
+        'Withdrawal amount must be a valid positive number',
+      );
+    }
+
+    const currentAmount = Number(user.amount) || 0;
+    if (currentAmount < withdrawalAmount) {
+      throw new BadRequestException('Insufficient funds');
+    }
+
+    const newAmount = parseFloat((currentAmount - withdrawalAmount).toFixed(2));
+
+    await knex('users').where({ accountNumber }).update({ amount: newAmount });
+
+    const updatedUser = await knex('users').where({ accountNumber }).first();
+
+    return {
+      message: 'Withdrawal completed successfully',
+      user: updatedUser,
     };
   }
 }

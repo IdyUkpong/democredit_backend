@@ -2,6 +2,7 @@ import { Controller, Post, Body } from '@nestjs/common';
 import { KnexService } from '../knex/knex.service';
 import { UserService } from './user.service';
 import { User } from 'src/model/user.model';
+import { LoginDto } from 'src/dto/login.dto';
 
 
 @Controller('users')
@@ -18,6 +19,12 @@ async createUser(@Body() userData: User) {
 }
 
 
+@Post('login')
+async loginUser(@Body() loginData: LoginDto) {
+  const user = await this.userService.login(loginData.email, loginData.password);
+  return { message: 'Login successful', user }; 
+}
+
   @Post('fund')
   async fundAccount(@Body() body: { accountNumber: number; amount: number }) {
     const { accountNumber, amount } = body;
@@ -26,12 +33,22 @@ async createUser(@Body() userData: User) {
 
 @Post('transfer')
   async transferFunds(
-    @Body('senderAccountNumber') senderAccountNumber: number,
-    @Body('recipientAccountNumber') recipientAccountNumber: number,
+    @Body('originatorAccountNumber') originatorAccountNumber: number,
+    @Body('beneficiaryAccountNumber') beneficiaryAccountNumber: number,
     @Body('transferAmount') transferAmount: number
-  ): Promise<{ message: string; sender: User; recipient: User }> {
-    return this.userService.transferFunds(senderAccountNumber, recipientAccountNumber, transferAmount);
+  ): Promise<{ message: string; originator: User; beneficiary: User }> {
+    return this.userService.transferFunds(originatorAccountNumber, beneficiaryAccountNumber, transferAmount);
   }
+
+  @Post('withdraw')
+  async withdrawFunds(
+    @Body('accountNumber') accountNumber: number,
+    @Body('amount') amount: number,
+    @Body('pin') pin: number
+  ): Promise<{ message: string; user: User }> {
+    return this.userService.withdrawFunds(accountNumber, amount, pin);
+  }
+  
 
 }
 
