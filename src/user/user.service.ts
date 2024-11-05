@@ -64,27 +64,27 @@ export class UserService {
     return { ...newUserData, id: userId };
   }
 
-  async login(
-    email: string,
-    password: string,
-  ): Promise<{ message: string; user: User }> {
-    const knex = this.knexService.getKnex();
+  // async login(
+  //   email: string,
+  //   password: string,
+  // ): Promise<{ message: string; user: User }> {
+  //   const knex = this.knexService.getKnex();
 
-    const user = await knex('users').where({ email }).first();
-    if (!user) {
-      throw new UnauthorizedException('Invalid email or password');
-    }
+  //   const user = await knex('users').where({ email }).first();
+  //   if (!user) {
+  //     throw new UnauthorizedException('Invalid email or password');
+  //   }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid email or password');
-    }
+  //   const isPasswordValid = await bcrypt.compare(password, user.password);
+  //   if (!isPasswordValid) {
+  //     throw new UnauthorizedException('Invalid email or password');
+  //   }
 
-    return {
-      message: 'Login successful',
-      user,
-    };
-  }
+  //   return {
+  //     message: 'Login successful',
+  //     user,
+  //   };
+  // }
 
   async fundAccount(
     accountNumber: number,

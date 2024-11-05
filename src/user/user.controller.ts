@@ -1,11 +1,12 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { KnexService } from '../knex/knex.service';
 import { UserService } from './user.service';
 import { User } from 'src/model/user.model';
-import { LoginDto } from 'src/dto/login.dto';
+import { JwtAuthGuard } from 'src/auth/jwt.guard';
 
 
 @Controller('users')
+@UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(
     private readonly userService: UserService, 
@@ -19,11 +20,11 @@ async createUser(@Body() userData: User) {
 }
 
 
-@Post('login')
-async loginUser(@Body() loginData: LoginDto) {
-  const user = await this.userService.login(loginData.email, loginData.password);
-  return { message: 'Login successful', user }; 
-}
+// @Post('login')
+// async loginUser(@Body() loginData: LoginDto) {
+//   const user = await this.userService.login(loginData.email, loginData.password);
+//   return { message: 'Login successful', user }; 
+// }
 
   @Post('fund')
   async fundAccount(@Body() body: { accountNumber: number; amount: number }) {
