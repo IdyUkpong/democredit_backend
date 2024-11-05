@@ -22,6 +22,28 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
+
+
+## Steps to start the app
+
+1. yarn installation
+$ yarn
+
+2. .env
+add .env to the root file, and modify using example.env
+
+3. create a database(DB_NAME) locally
+
+4. run db migrate
+
+$ npx knex migrate:latest --knexfile knexfile.ts
+
+
+5. start the app
+
+$ yarn start:dev
+
+
 ## Description
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
@@ -35,14 +57,6 @@ $ yarn install
 ## Running the app
 
 ```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
 
 #Database
 #create db tables
@@ -53,6 +67,17 @@ $ npx knex migrate:latest
 
 #roll back migrates
 npx knex migrate:rollback
+
+# development
+$ yarn run start
+
+# watch mode
+$ yarn run start:dev
+
+# production mode
+$ yarn run start:prod
+
+
 
 ```
 
@@ -102,6 +127,8 @@ Environment Configuration: .env for storing sensitive data
 Deployment Platform: Vercel/Render/Netlify (for hosting), with MySQL configured locally or on a cloud-based database service
 
 Blacklist Check: Integration with the Lendsqr Adjutor Karma API for real-time blacklist verification
+
+
 
 
 
