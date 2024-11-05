@@ -44,9 +44,14 @@ $ yarn run start:dev
 # production mode
 $ yarn run start:prod
 
+#Database
+#create db tables
 npx knex migrate:make create_users_table
+
+#run migrations
 $ npx knex migrate:latest 
 
+#roll back migrates
 npx knex migrate:rollback
 
 ```
@@ -66,6 +71,39 @@ $ yarn run test:e2e
 # test coverage
 $ yarn run test:cov
 ```
+
+## Project Overview
+Demo Credit is a mobile lending platform aimed at simplifying the lending and repayment process for users. The wallet service is a crucial component that allows users to receive loan disbursements, fund their accounts, transfer funds, and make withdrawals. This document outlines the design and implementation details for the wallet service MVP.
+
+## Features
+1. User Account Management
+Create an Account: Users can sign up and create a wallet account.
+Blacklist Check: Integration with the Lendsqr Adjutor Karma service to ensure users in the blacklist are not onboarded.
+2. Account Funding
+Fund Wallet: Users can deposit money into their wallet using available payment options.
+3. Fund Transfer
+Transfer Funds: Users can transfer funds to other registered users within the Demo Credit ecosystem.
+4. Withdraw Funds
+Withdraw Money: Users can initiate withdrawals from their wallet to linked bank accounts or mobile money services.
+
+## Technical Architecture
+
+## Tech Stack
+Backend Framework: NodeJS (NestJS Framework)
+
+Database: MySQL
+
+ORM: Knex.js
+
+Programming Language: TypeScript
+
+Environment Configuration: .env for storing sensitive data
+
+Deployment Platform: Vercel/Render/Netlify (for hosting), with MySQL configured locally or on a cloud-based database service
+
+Blacklist Check: Integration with the Lendsqr Adjutor Karma API for real-time blacklist verification
+
+
 
 ## Support
 
