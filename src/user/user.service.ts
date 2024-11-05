@@ -8,6 +8,7 @@ import {
 import { KnexService } from '../knex/knex.service';
 import { User } from '../model/user.model';
 import * as bcrypt from 'bcrypt';
+import axios from 'axios';
 
 @Injectable()
 export class UserService {
@@ -15,6 +16,29 @@ export class UserService {
 
   async createUser(userData: Omit<User, 'id'>): Promise<User> {
     const knex = this.knexService.getKnex();
+
+    // Check user is found on the karma blacklisted list. I do not have access to the endpoint.
+    //error message: "Error during user verification: We couldn't verify your access. Please check your authorization", so this part will be commented out.
+
+    /* try {
+      const response = await axios.post('https://adjutor.lendsqr.com/v2/verification/karma/', {
+        bvn: userData.bvn,
+        email: userData.email,
+        accountNumber: userData.accountNumber,
+       
+      });
+    
+
+     if (response.data && response.data.data && response.data.data.karma_identity) {
+        throw new ConflictException('User is blacklisted and cannot be registered');
+      }
+    } catch (error) {
+      if (error.response) {
+        throw new ConflictException('Error during user verification: ' + error.response.data.message);
+      } else {
+        throw new Error('Failed to verify user status');
+      }
+    }*/
 
     const existingUser = await knex('users')
       .where({ email: userData.email })
