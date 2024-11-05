@@ -1,9 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { KnexService } from '../knex/knex.service';
-import { JwtAuthGuard } from 'src/auth/jwt.guard';
-import { User } from 'src/model/user.model';
+
 
 describe('UserController', () => {
   let userController: UserController;
@@ -20,8 +17,8 @@ describe('UserController', () => {
     id: 1,
     name: 'Idongesit Ukpong',
     email: 'idongesit@example.com',
-    password: 'password123',
-    accountNumber: 123456,
+    password: '123456',
+    accountNumber: 1234567890,
     bvn: '12345678901',
   };
   

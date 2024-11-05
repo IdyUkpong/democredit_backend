@@ -20,7 +20,7 @@ import { UserService } from 'src/user/user.service';
     }),
   ],
   providers: [AuthService, JwtStrategy, KnexService, UserService],
-  
+
   exports: [AuthService],
 })
 export class AuthModule {}
