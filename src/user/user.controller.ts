@@ -5,7 +5,7 @@ import { User } from 'src/model/user.model';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 
 @Controller('users')
-@UseGuards(JwtAuthGuard)
+
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -19,12 +19,14 @@ export class UserController {
   }
 
   @Post('fund')
+  @UseGuards(JwtAuthGuard)
   async fundAccount(@Body() body: { accountNumber: number; amount: number }) {
     const { accountNumber, amount } = body;
     return await this.userService.fundAccount(accountNumber, amount);
   }
 
   @Post('transfer')
+  @UseGuards(JwtAuthGuard)
   async transferFunds(
     @Body('originatorAccountNumber') originatorAccountNumber: number,
     @Body('beneficiaryAccountNumber') beneficiaryAccountNumber: number,

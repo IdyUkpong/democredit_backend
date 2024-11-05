@@ -3,12 +3,11 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
+
 } from '@nestjs/common';
 import { KnexService } from '../knex/knex.service';
 import { User } from '../model/user.model';
 import * as bcrypt from 'bcrypt';
-import axios from 'axios';
 
 @Injectable()
 export class UserService {
