@@ -124,7 +124,6 @@ Programming Language: TypeScript
 
 Environment Configuration: .env for storing sensitive data
 
-Deployment Platform: Vercel/Render/Netlify (for hosting), with MySQL configured locally or on a cloud-based database service
 
 Blacklist Check: Integration with the Lendsqr Adjutor Karma API for real-time blacklist verification
 
